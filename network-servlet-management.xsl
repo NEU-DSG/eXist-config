@@ -9,16 +9,21 @@
   <!-- For use on:                                                          -->
   <!--        $EXIST_HOME/webapp/WEB-INF/controller-config.xml              -->
   <!--        $EXIST_HOME/webapp/WEB-INF/web.xml                            -->
-  <!--   last modified: May 2015                                            -->
+  <!--   last modified: Feb 2016                                            -->
   <!--   author: Ashley M. Clark                                            -->
+  <!-- CHANGELOG                                                            -->
+  <!-- 2016-02-22: Removed RESTXQ from disabled servlets. ~Ashley           -->
   
   <xsl:import href="config-manips.xsl"/>
   <xsl:output indent="yes" omit-xml-declaration="yes"/>
   
   <!-- List the servlets to disable here. -->
   <xsl:variable name="disabledServlet" 
-    select="('milton', 'AtomServlet', 'RestXqServlet', 'AxisServlet', 
-             'AdminServlet', 'JMXServlet')"/>
+    select="( 'milton', 
+              'AtomServlet',
+              'AxisServlet',
+              'AdminServlet', 
+              'JMXServlet')"/>
   
   <xsl:template match="ex:forward[@servlet=$disabledServlet] | 
                         web:servlet[web:servlet-name=$disabledServlet]">
