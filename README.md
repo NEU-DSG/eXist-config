@@ -1,8 +1,12 @@
-# Your eXist-DB and You
+# eXist-config
 
-This repository contains some helpful transformations and shell scripts for setting up eXist DB on a production server and maintaining it.
+This repository contains some helpful transformations and shell scripts for setting up [eXist-DB version 2.2](http://exist-db.org) on a production server and maintaining it.
 
+One workflow for setting up and configuring eXist is given below.
 
+Additional resources:
+* [The eXist-DB documentation](http://exist-db.org/exist/apps/doc/) contains guides on installation, configuration, indexing, backups, and more. However, this repository exists (badum psh) because information on creating a production instance can be hard to distill.
+* [_eXist_, by Siegel and Retter](http://shop.oreilly.com/product/0636920026525.do) includes a great deal of information on eXist's architecture, packages, and services. Chapter 8, on security, is especially useful.
 
 ## Installing eXist
 
@@ -14,7 +18,7 @@ Remove $EXIST_HOME/autodeploy.
 
 ### Making eXist a system service
 
-Stop eXist.
+Shut down eXist.
 
 Create an eXist user with $EXIST_HOME as its home directory: `sudo useradd -d $EXIST_HOME exist`
 
@@ -34,7 +38,7 @@ Make sure $EXIST_HOME is owned by exist:exist.
 * Should say eXist is stopped. Don't bring it up yet.
 
 `sudo chkconfig --add existdb`
-* Add the eXist service to chkconfig for runlevel management.
+* Add the eXist service to chkconfig for runlevel management. This allows eXist to shut down and start up with the server.
 
 `chkconfig --list existdb`
 * Should show: "exist            0:off    1:off    2:on    3:on    4:on    5:on    6:off"
@@ -48,21 +52,37 @@ Make sure $EXIST_HOME is owned by exist:exist.
 
 IMPORTANT: Shut down and quit eXist before making any changes to eXist's configuration files!
 
-There are several key files you should know about:
+Several key files you should know about:
 * $EXIST_HOME/conf.xml
 * $EXIST_HOME/tools/jetty/etc/jetty.xml
 * $EXIST_HOME/webapp/WEB-INF/controller-config.xml
 * $EXIST_HOME/webapp/WEB-INF/web.xml
 
-### eXist's configuration file
+### eXist configuration file
 
 In $EXIST_HOME/conf.xml:
 * Comment out .xar application autodeployment trigger at //startup/triggers
 * Change //indexer/@preserve-whitespace-mixed-content to "yes"
 * Change //indexer/@stemming to "yes"
 * Change //serializer/@enable-xsl to "yes"
+* Within //transformer[@class eq 'net.sf.saxon.TransformerFactoryImpl'], add this line: 
+  <attribute name="http://saxon.sf.net/feature/recoveryPolicyName" value="recoverWithWarnings" type="string"/>
 * Comment out //builtin-modules/module[uri="http://exist-db.org/xquery/examples" | uri="http://exist-db.org/xquery/mail" | uri="http://exist-db.org/xquery/xslfo"]
 * Set //builtin-modules/module/parameter[@name="evalDisabled"]/@value to "true"
+
+#### Backups
+
+Within //scheduler, create a database backup policy following either the consistency check or data backup examples commented out by default. Below is an example of a consistency check which runs every day, creating incremental backups (containing changed data since the last backup) afterward. The database is backed up in full every week. Backups and log files are zipped and stored in the directory $EXIST_DATADIR/backup/consistency.
+  <job type="system" name="checkAndBackup" 
+    class="org.exist.storage.ConsistencyCheckTask"
+    cron-trigger="0 0 1 1/1 * ?">
+    <parameter name="output" value="backup/consistency"/>
+    <parameter name="backup" value="yes"/>
+    <parameter name="incremental" value="yes"/>
+    <parameter name="incremental-check" value="yes"/>
+    <parameter name="max" value="7"/>
+    <parameter name="zip" value="yes"/>
+  </job>
 
 ### Jetty server configuration file
 
