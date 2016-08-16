@@ -66,23 +66,25 @@ In $EXIST_HOME/conf.xml:
 * Change `//indexer/@stemming` to "yes"
 * Change `//serializer/@enable-xinclude` to "no"
 * Within `//transformer[@class eq 'net.sf.saxon.TransformerFactoryImpl']`, add this line: 
-  <attribute name="http://saxon.sf.net/feature/recoveryPolicyName" value="recoverWithWarnings" type="string"/>
+<pre><code>&lt;attribute name="http://saxon.sf.net/feature/recoveryPolicyName" value="recoverWithWarnings" type="string"/&gt;
+</code></pre>
 * Comment out `//builtin-modules/module[uri="http://exist-db.org/xquery/examples" | uri="http://exist-db.org/xquery/mail" | uri="http://exist-db.org/xquery/xslfo"]`
 * Set `//builtin-modules/module/parameter[@name="evalDisabled"]/@value` to "true"
 
 #### Backups
 
 Within `//scheduler`, create a database backup policy following either the consistency check or data backup examples commented out by default. Below is an example of a consistency check which runs every day, creating incremental backups (containing changed data since the last backup) afterward. The database is backed up in full every week. Backups and log files are zipped and stored in the directory $EXIST_DATADIR/backup/consistency.
-  <job type="system" name="checkAndBackup" 
+<pre><code>&lt;job type="system" name="checkAndBackup" 
     class="org.exist.storage.ConsistencyCheckTask"
-    cron-trigger="0 0 1 1/1 * ?">
-    <parameter name="output" value="backup/consistency"/>
-    <parameter name="backup" value="yes"/>
-    <parameter name="incremental" value="yes"/>
-    <parameter name="incremental-check" value="yes"/>
-    <parameter name="max" value="7"/>
-    <parameter name="zip" value="yes"/>
-  </job>
+    cron-trigger="0 0 1 1/1 * ?"&gt;
+    &lt;parameter name="output" value="backup/consistency"/&gt;
+    &lt;parameter name="backup" value="yes"/&gt;
+    &lt;parameter name="incremental" value="yes"/&gt;
+    &lt;parameter name="incremental-check" value="yes"/&gt;
+    &lt;parameter name="max" value="7"/&gt;
+    &lt;parameter name="zip" value="yes"/&gt;
+  &lt;/job&gt;
+</code></pre>
 
 ### Jetty server configuration file
 
