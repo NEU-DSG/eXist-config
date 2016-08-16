@@ -5,16 +5,24 @@
   <!-- Configure eXist's startup and database behaviors.                    -->
   <!-- For use on:                                                          -->
   <!--        $EXIST_HOME/conf.xml                                          -->
-  <!--   last modified: Feb 2016                                            -->
   <!--   author: Ashley M. Clark                                            -->
   <!-- CHANGELOG                                                            -->
+  <!-- 2016-08-16: Ensured that elements could be commented out using the 
+        Michael Kay's character map solution. Disallowed XSL transform and 
+        XInclude expansion during serialization. ~Ashley                    -->
   <!-- 2016-02-22: Removed RESTXQ from disabled servlets and updated backup 
     policy to use incremental backup with consistency checks. ~Ashley       -->
   
   <xsl:import href="config-manips.xsl"/>
-  <xsl:output indent="yes"/>
+  <xsl:output indent="yes" use-character-maps="comment-delimiters"/>
   
   <xsl:param name="backupDir" select="'backup/consistency'"/>
+  
+  <!-- Lower the cache threshold so that fewer page reads are needed to prevent 
+    the shrinking of the cache. -->
+  <xsl:template match="dbconnection/@cacheShrinkThreshold">
+    <xsl:attribute name="cacheShrinkThreshold">500</xsl:attribute>
+  </xsl:template>
   
   <!-- Do not use application autodeployment. -->
   <xsl:template match="startup//trigger[@class='org.exist.repo.AutoDeploymentTrigger']">
@@ -54,9 +62,14 @@
     </job>
   </xsl:template>
   
-  <!-- Allow XSLT stylesheets to be run on XML display. -->
+  <!-- Disallow XIncludes to be expanded automatically. -->
+  <xsl:template match="serializer/@enable-xinclude">
+    <xsl:attribute name="enable-xinclude">no</xsl:attribute>
+  </xsl:template>
+  
+  <!-- Disallow XSLT stylesheets to be run on XML display. -->
   <xsl:template match="serializer/@enable-xsl">
-    <xsl:attribute name="enable-xsl">yes</xsl:attribute>
+    <xsl:attribute name="enable-xsl">no</xsl:attribute>
   </xsl:template>
   
   <!-- Have Saxon 9.4 output XSL warnings as a type of error. Use the parameter 

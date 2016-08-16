@@ -9,21 +9,23 @@
   <!-- For use on:                                                          -->
   <!--        $EXIST_HOME/webapp/WEB-INF/controller-config.xml              -->
   <!--        $EXIST_HOME/webapp/WEB-INF/web.xml                            -->
-  <!--   last modified: Feb 2016                                            -->
   <!--   author: Ashley M. Clark                                            -->
   <!-- CHANGELOG                                                            -->
+  <!-- 2016-08-16: Ensured that elements could be commented out using the 
+        Michael Kay's character map solution. Commented out Milton and JMX 
+        Servlet in the list of servlets to disable. ~Ashley                 -->
   <!-- 2016-02-22: Removed RESTXQ from disabled servlets. ~Ashley           -->
   
   <xsl:import href="config-manips.xsl"/>
-  <xsl:output indent="yes" omit-xml-declaration="yes"/>
+  <xsl:output indent="yes" omit-xml-declaration="yes" use-character-maps="comment-delimiters"/>
   
   <!-- List the servlets to disable here. -->
   <xsl:variable name="disabledServlet" 
-    select="( 'milton', 
+    select="( (:'milton',:) 
               'AtomServlet',
               'AxisServlet',
-              'AdminServlet', 
-              'JMXServlet')"/>
+              'AdminServlet'(:, 
+              'JMXServlet':))"/>
   
   <xsl:template match="ex:forward[@servlet=$disabledServlet] | 
                         web:servlet[web:servlet-name=$disabledServlet]">

@@ -61,18 +61,18 @@ Several key files you should know about:
 ### eXist configuration file
 
 In $EXIST_HOME/conf.xml:
-* Comment out .xar application autodeployment trigger at //startup/triggers
-* Change //indexer/@preserve-whitespace-mixed-content to "yes"
-* Change //indexer/@stemming to "yes"
-* Change //serializer/@enable-xsl to "yes"
-* Within //transformer[@class eq 'net.sf.saxon.TransformerFactoryImpl'], add this line: 
+* Comment out .xar application autodeployment trigger at `//startup/triggers`
+* Change `//indexer/@preserve-whitespace-mixed-content` to "yes"
+* Change `//indexer/@stemming` to "yes"
+* Change `//serializer/@enable-xinclude` to "no"
+* Within `//transformer[@class eq 'net.sf.saxon.TransformerFactoryImpl']`, add this line: 
   <attribute name="http://saxon.sf.net/feature/recoveryPolicyName" value="recoverWithWarnings" type="string"/>
-* Comment out //builtin-modules/module[uri="http://exist-db.org/xquery/examples" | uri="http://exist-db.org/xquery/mail" | uri="http://exist-db.org/xquery/xslfo"]
-* Set //builtin-modules/module/parameter[@name="evalDisabled"]/@value to "true"
+* Comment out `//builtin-modules/module[uri="http://exist-db.org/xquery/examples" | uri="http://exist-db.org/xquery/mail" | uri="http://exist-db.org/xquery/xslfo"]`
+* Set `//builtin-modules/module/parameter[@name="evalDisabled"]/@value` to "true"
 
 #### Backups
 
-Within //scheduler, create a database backup policy following either the consistency check or data backup examples commented out by default. Below is an example of a consistency check which runs every day, creating incremental backups (containing changed data since the last backup) afterward. The database is backed up in full every week. Backups and log files are zipped and stored in the directory $EXIST_DATADIR/backup/consistency.
+Within `//scheduler`, create a database backup policy following either the consistency check or data backup examples commented out by default. Below is an example of a consistency check which runs every day, creating incremental backups (containing changed data since the last backup) afterward. The database is backed up in full every week. Backups and log files are zipped and stored in the directory $EXIST_DATADIR/backup/consistency.
   <job type="system" name="checkAndBackup" 
     class="org.exist.storage.ConsistencyCheckTask"
     cron-trigger="0 0 1 1/1 * ?">
@@ -87,23 +87,18 @@ Within //scheduler, create a database backup policy following either the consist
 ### Jetty server configuration file
 
 In $EXIST_HOME/tools/jetty/etc/jetty.xml:
-* If desired, change //Call[@name='addConnector']//SystemProperty[@name='jetty']/@default to a different port
+* If desired, change `//Call[@name='addConnector']//SystemProperty[@name='jetty']/@default` to a different port
 	* If changing the port, update port references in $EXIST_HOME/client.properties
-* Change //Ref[@id='RequestLog']//Set[@name='LogTimeZone'] to your time zone ("EST", for example)
+* Change `//Ref[@id='RequestLog']//Set[@name='LogTimeZone']` to your time zone ("EST", for example)
 
 ### Network servlet management files
 
 In $EXIST_HOME/webapp/WEB-INF/controller-config.xml:
-* Comment out //forward[@servlet='milton']
-* Comment out //forward[@servlet='atom']
-* Comment out all //forward[@servlet='AxisServlet']
-* Comment out //forward[@servlet='AdminServlet']
-* Comment out //forward[@servlet='JMXServlet']
-* Comment out //forward[@servlet='XQueryServlet']
+* Comment out `//forward[@servlet='atom']`
+* Comment out all `//forward[@servlet='AxisServlet']`
+* Comment out `//forward[@servlet='AdminServlet']`
 
 In $EXIST_HOME/webapp/WEB-INF/web.xml:
-* Comment out //servlet[servlet-name='JMXServlet']
-* Comment out //servlet[servlet-name='milton']
-* Comment out //servlet[servlet-name='AxisServlet']
-* Comment out //servlet[servlet-name='AdminServlet']
-* Comment out //servlet[servlet-name='AtomServlet']
+* Comment out `//servlet[servlet-name='AxisServlet']`
+* Comment out `//servlet[servlet-name='AdminServlet']`
+* Comment out `//servlet[servlet-name='AtomServlet']`
